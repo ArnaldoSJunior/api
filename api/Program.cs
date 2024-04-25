@@ -73,46 +73,39 @@ app.MapPost("/produtos/cadastrar", ([FromBody] Produto produto,
     return Results.Created("", produto);
 });
 
-app.MapDelete("/produtos/excluir/{nome}", ([FromRoute] string nome) =>
+// DELETE http://localhost:5169/produtos/deletar/id
+app.MapDelete("/produtos/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>
 {
+    Produto? produto = ctx.Produtos.FirstOrDefault(x => x.Id == id);
 
-    int index = produtos.FindIndex(p => p.Nome == nome);
-
-
-    if (index >= 0)
+    if (produto is null)
     {
-        produtos.RemoveAt(index);
-        return Results.Ok($"Produto '{nome}' excluído com sucesso.");
-    }
-    else
-    {
-        return Results.NotFound($"Produto '{nome}' não encontrado.");
-    }
-});
-app.MapPatch("/produtos/alterar/{nome}/{preco}", ([FromRoute] string nome, [FromRoute] double preco) =>
-{
-    for (int i = 0; i < produtos.Count; i++)
-    {
-        if (produtos[i].Nome == nome)
-        {
-            produtos[i].Valor = preco;
-            return Results.Ok("Produto alterado");
-        }
 
-
+        return Results.NotFound("Produto não encontrado");
     }
-    return Results.NotFound("produto não encontrado");
+    ctx.Produtos.Remove(produto);
+    ctx.SaveChanges();
+    return Results.Ok("Produto removido com sucesso!!");
 });
 
+// PATCH http://localhost:5169/produtos/alterar/id
+app.MapPatch("/produtos/alterar/{id}", ([FromRoute] string id, [FromBody] Produto novoProduto,
+[FromServices] AppDataContext ctx) =>
+{
+    var produto = ctx.Produtos.Find(id);
+    if (produto is null)
+    {
+        return Results.NotFound("Produto não encontrado");
 
+    }
+    produto.Nome = novoProduto.Nome;
+    produto.Descricao = novoProduto.Descricao;
+    produto.Valor = novoProduto.Valor;
 
+    ctx.SaveChanges();
+    return Results.Ok("Produto atualizado com suscesso!!");
+});
 
-//Exercicios
-//1. cadastrar um produto
-//2. pela url
-//3. pelo corpo
-//4. remoção do produto
-//5.alteração de produto
 
 app.Run();
 
