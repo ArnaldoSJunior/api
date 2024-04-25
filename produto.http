@@ -1,0 +1,22 @@
+###RAIZ da aplicação
+GET http://localhost:5054
+###Listagem de produtos
+GET http://localhost:5054/produtos/listar
+###buscar produtos
+GET http://localhost:5054/produtos/buscar/cccd9d02-7fb3-40e6-8ad2-8481e263c463
+###Cadastro de produtos
+POST  http://localhost:5054/produtos/cadastrar/
+Content-Type: application/json
+
+{
+    "nome" : "Arroz",
+    "descricao" : "Alimento",
+    "valor" : 15
+}
+
+###Exlusão do produto
+DELETE  http://localhost:5054/produtos/excluir/Arroz
+
+###Alterar
+PATCH   http://localhost:5054/produtos/alterar/Arroz/16
+
