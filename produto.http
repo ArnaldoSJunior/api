@@ -9,9 +9,9 @@ POST  http://localhost:5054/produtos/cadastrar/
 Content-Type: application/json
 
 {
-    "nome" : "Arroz",
-    "descricao" : "Alimento",
-    "valor" : 15
+    "nome" : "",
+    "descricao" : "Aulimentoooooo",
+    "valor" : 2000
 }
 
 ###Exlusão do produto

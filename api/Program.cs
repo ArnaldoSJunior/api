@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,9 +69,26 @@ return Results.Created("", produto);
 app.MapPost("/produtos/cadastrar", ([FromBody] Produto produto,
 [FromServices] AppDataContext ctx) =>
 {
-    ctx.Produtos.Add(produto);
-    ctx.SaveChanges();
-    return Results.Created("", produto);
+
+    List<ValidationResult> erros = new List<ValidationResult>();
+    if (!Validator.TryValidateObject(
+        produto, new ValidationContext(produto), erros, true))
+    {
+        return Results.BadRequest(erros);
+    }
+
+    Produto? produtoBuscado = ctx.Produtos.FirstOrDefault
+    (x => x.Nome == produto.Nome);
+    if (produtoBuscado is null)
+    {
+        //Adcionar obj dentro da tabela no banco de dados
+        ctx.Produtos.Add(produto);
+        ctx.SaveChanges();
+        return Results.Created("", produto);
+
+    }
+
+    return Results.BadRequest("Já existe produto com o emso nome!");
 });
 
 // DELETE http://localhost:5169/produtos/deletar/id
